@@ -1,0 +1,49 @@
+const int trigPin = 9; // Trigger pin
+const int echoPin = 10; // Echo pin
+
+void setup() {
+  Serial.begin(9600); // Start serial communication
+  pinMode(trigPin, OUTPUT); // Set trigger pin as output
+  pinMode(echoPin, INPUT); // Set echo pin as input
+}
+
+void loop() {
+  long duration, distance;
+
+  // Clear the trigger
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+
+  // Trigger the sensor
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  // Read the echo pin
+  duration = pulseIn(echoPin, HIGH);
+
+  // Calculate distance in inches
+  distance = duration * 0.0133; // (duration / 2) * 0.0133
+
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" inches");
+
+  delay(1000); // Wait for 1 second before the next reading
+}
+
+
+
+
+The distance is calculated based on the formula:
+Distance
+=
+Duration
+2
+×
+Speed of Sound
+Distance= 
+2
+Duration
+​
+ ×Speed of Sound
