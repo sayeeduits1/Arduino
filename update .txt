@@ -1,0 +1,56 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+int input = A0;       // Input pin for detecting signal
+int counter = 0;      // Counter variable
+int state = 0;        // State to track button press
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Initialize LCD with I2C address 0x27 (16x2)
+
+void setup()
+{
+   Wire.begin();// Initialize the LCD
+  lcd.init();
+  lcd.backlight();
+
+  // Display initial messages for 2 seconds
+  lcd.setCursor(0, 0);
+  lcd.print(" Ceilling fan");
+  lcd.setCursor(0, 1);
+  lcd.print("Rewinding machine");
+  delay(5000); // Wait for 2 seconds
+
+  // Clear the screen and start counting
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Counting...");
+
+  // Set the input pin to INPUT mode
+  pinMode(input, INPUT);
+}
+
+void loop()
+{
+  // Read the state of the input pin
+  int inputState = digitalRead(input);
+
+  // When a rising edge (signal goes HIGH) is detected
+  if (inputState == HIGH && state == 0)
+  {
+    // Increment counter and update the display
+    counter++;
+    state = 1; // Change state to prevent multiple counts on the same signal
+
+    // Display "Sayeed" and the current turn count
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Sayeed");
+    lcd.setCursor(0, 1);
+    lcd.print("Turn: ");
+    lcd.print(counter);
+  }
+  else if (inputState == LOW && state == 1)
+  {
+    // Reset state when the input goes LOW again
+    state = 0;
+  }
+}
