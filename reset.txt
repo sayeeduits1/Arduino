@@ -1,0 +1,83 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+int input = A0;       // Input pin for detecting signal
+int resetPin = A1;    // Input pin for resetting the counter
+int counter = 0;      // Counter variable
+int state = 0;        // State to track button press
+LiquidCrystal_I2C lcd(0x27, 16, 2); // Initialize LCD with I2C address 0x27 (16x2)
+
+void setup()
+{
+  Wire.begin(); // Initialize the LCD
+  lcd.init();
+  lcd.backlight();
+
+  // Display initial messages for 5 seconds
+  lcd.setCursor(0, 0);
+  lcd.print("Ceiling fan");
+  lcd.setCursor(0, 1);
+  lcd.print("Rewinding machine");
+  delay(2000);
+  lcd.setCursor(0, 0);
+  lcd.print("Sayeed Mahmud");
+  delay(1500);
+
+  // Clear the screen and start counting
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Counting...");
+  lcd.setCursor(0, 1);
+  lcd.print("Rony+Mujahid");
+
+  // Set the input and reset pins to INPUT mode
+  pinMode(input, INPUT);
+  pinMode(resetPin, INPUT_PULLUP); // Use INPUT_PULLUP for the reset pin
+}
+
+void loop()
+{
+  // Read the state of the input pin
+  int inputState = digitalRead(input);
+  int resetState = digitalRead(resetPin);
+
+  // When a rising edge (signal goes HIGH) is detected
+  if (inputState == HIGH && state == 0)
+  {
+    // Increment counter and update the display
+    counter++;
+    state = 1; // Change state to prevent multiple counts on the same signal
+
+    // Display "Sayeed" and the current turn count
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Sayeed");
+    lcd.setCursor(0, 1);
+    lcd.print("Turn: ");
+    lcd.print(counter);
+  }
+  else if (inputState == LOW && state == 1)
+  {
+    // Reset state when the input goes LOW again
+    state = 0;
+  }
+
+  // Reset the counter if the reset button is pressed
+  if (resetState == LOW) // Assuming the reset button is active LOW
+  {
+    counter = 0; // Reset the counter
+
+    // Update the display
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Counter Reset");
+    lcd.setCursor(0, 1);
+    lcd.print("Turn: 0");
+    delay(2000); // Briefly display the reset message
+
+    // Return to the "Counting..." display
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Counting...");
+  }
+}
